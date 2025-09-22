@@ -41,7 +41,7 @@ Tujuan: memahami penerapan kriptografi sederhana dalam **penyimpanan password te
 ### 1. Clone Repository
 ```bash
 git clone https://github.com/username/chat-terenkripsi-kelompok-4.git
-cd chat-terenkripsi-kelompok-4
+cd chat-terenkripsi-kelompok-4 ```
 2. Install Dependencies
 bash
 Salin kode
@@ -121,3 +121,4 @@ kripto-web/
 │── index.js
 │── package.json
 │── README.md
+
