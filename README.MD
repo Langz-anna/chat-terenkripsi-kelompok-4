@@ -80,7 +80,7 @@ Buka browser → http://localhost:3000
 
 🔄 Alur Sistem
 1. Register User
-📸 Screenshot halaman register
+📸 Screenshot halaman register 
 
 User mengisi username, password, display name.
 
@@ -128,6 +128,7 @@ kripto-web/
 │── package.json
 │── README.md
 ```
+
 
 
 
