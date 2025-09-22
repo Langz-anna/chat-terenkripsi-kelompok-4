@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Chat — Profil</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="chat-wrapper">
+    <div class="users-list" id="usersList">
+      <h3>Users</h3>
+      <div id="users"></div>
+    </div>
+
+    <div class="chat-box">
+      <div id="profileTop"></div>
+      <div class="messages" id="messages"></div>
+
+      <div class="input-area">
+        <input id="msgInput" placeholder="Tulis pesan..." />
+        <button id="sendBtn">Kirim</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const currentUid = params.get('uid');
+if (!currentUid) {
+  document.body.innerHTML = '<p>No uid provided</p>';
+}
+
+// state
+let currentUser = null;
+let currentUserId = null;
+let selectedUser = null;
+let pollingInterval = null;
+
+async function fetchProfile() {
+  const res = await fetch('/api/profile?uid=' + encodeURIComponent(currentUid));
+  const j = await res.json();
+  if (j.success) {
+    currentUser = j.user;
+    currentUserId = currentUser.id;
+    document.getElementById('profileTop').innerHTML = `
+      <h2>${escapeHtml(currentUser.display_name || currentUser.username)}</h2>
+      <p style="font-size:13px;color:#666">User ID internal: ${currentUser.id}</p>
+      <hr/>
+    `;
+  } else {
+    document.getElementById('profileTop').innerText = 'Failed to load profile';
+  }
+}
+
+function escapeHtml(s) {
+  if (!s) return '';
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+async function loadUsers() {
+  const res = await fetch('/api/users');
+  const j = await res.json();
+  if (!j.success) return;
+  const container = document.getElementById('users');
+  container.innerHTML = '';
+  j.users.forEach(u => {
+    
+    if (u.uid === currentUid) return;
+    const el = document.createElement('div');
+    el.className = 'user-item';
+    el.dataset.uid = u.uid;
+    el.innerHTML = `<strong>${escapeHtml(u.display_name || u.username)}</strong><div style="font-size:12px;color:#666">${escapeHtml(u.username)}</div>`;
+    el.addEventListener('click', () => selectUser(u));
+    container.appendChild(el);
+  });
+}
+
+function selectUser(u) {
+  
+  Array.from(document.querySelectorAll('.user-item')).forEach(n => n.classList.remove('active'));
+  const clicked = Array.from(document.querySelectorAll('.user-item')).find(n => n.dataset.uid === u.uid);
+  if (clicked) clicked.classList.add('active');
+
+  selectedUser = u;
+  document.getElementById('messages').innerHTML = '<div style="color:#666">Loading conversation...</div>';
+  loadMessages();
+
+  
+  if (pollingInterval) clearInterval(pollingInterval);
+  pollingInterval = setInterval(loadMessages, 2000);
+}
+
+async function loadMessages() {
+  if (!selectedUser) return;
+  const url = `/api/messages?uid=${encodeURIComponent(currentUid)}&with=${encodeURIComponent(selectedUser.uid)}`;
+  const res = await fetch(url);
+  const j = await res.json();
+  if (!j.success) {
+    document.getElementById('messages').innerText = 'Failed to load messages';
+    return;
+  }
+  renderMessages(j.messages);
+}
+
+function renderMessages(msgs) {
+  const cont = document.getElementById('messages');
+  cont.innerHTML = '';
+  msgs.forEach(m => {
+    const el = document.createElement('div');
+    el.className = 'message' + (m.sender_id === currentUserId ? ' me' : '');
+    el.innerHTML = `<div class="meta">${m.sender_id === currentUserId ? 'You' : 'Them'} • ${new Date(m.created_at).toLocaleString()}</div>
+                    <div class="body">${escapeHtml(m.message)}</div>`;
+    cont.appendChild(el);
+  });
+  
+  cont.scrollTop = cont.scrollHeight;
+}
+
+document.getElementById('sendBtn').addEventListener('click', sendMessage);
+document.getElementById('msgInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') sendMessage();
+});
+
+async function sendMessage() {
+  if (!selectedUser) return alert('Pilih user untuk chat');
+  const txt = document.getElementById('msgInput').value.trim();
+  if (!txt) return;
+  const body = {
+    senderUid: currentUid,
+    receiverUid: selectedUser.uid,
+    message: txt
+  };
+  const res = await fetch('/api/send', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify(body)
+  });
+  const j = await res.json();
+  if (j.success) {
+    document.getElementById('msgInput').value = '';
+    loadMessages();
+  } else {
+    alert('Kirim gagal: ' + (j.error || JSON.stringify(j)));
+  }
+}
+
+
+(async () => {
+  await fetchProfile();
+  await loadUsers();
+})();
+</script>
+</body>
+</html>
