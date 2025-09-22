@@ -51,29 +51,31 @@ npm install
 ```
 
 ### 3. Setup Database
-Buka phpMyAdmin
+#### 1.Buka phpMyAdmin
 
-Buat database baru, misalnya: kripto_web
+#### 2.Buat database baru, misalnya: kripto_web
 
-Import file:
+#### 3.Import file:
 
 ```pgsql
-Salin kode
 database/kripto_web.sql
+```
+
 4. Konfigurasi .env
 Buat file .env di root folder:
 
-env
-Salin kode
+```env
 DB_HOST=localhost
 DB_USER=root
 DB_PASS=
 DB_NAME=kripto_web
 PORT=3000
+```
+
 5. Jalankan Server
-bash
-Salin kode
+```bash
 node index.js
+```
 Buka browser → http://localhost:3000
 
 🔄 Alur Sistem
@@ -111,7 +113,7 @@ Pesan tersimpan di tabel messages pada database.
 Pesan ditampilkan di halaman chat sesuai urutan waktu.
 
 📂 Struktur Proyek
-pgsql
+```pgsql
 Salin kode
 kripto-web/
 │── database/
@@ -125,6 +127,7 @@ kripto-web/
 │── index.js
 │── package.json
 │── README.md
+```
 
 
 
