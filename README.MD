@@ -50,14 +50,14 @@ Salin kode
 npm install
 ```
 
-3. Setup Database
+### 3. Setup Database
 Buka phpMyAdmin
 
 Buat database baru, misalnya: kripto_web
 
 Import file:
 
-pgsql
+```pgsql
 Salin kode
 database/kripto_web.sql
 4. Konfigurasi .env
@@ -125,6 +125,7 @@ kripto-web/
 │── index.js
 │── package.json
 │── README.md
+
 
 
 
