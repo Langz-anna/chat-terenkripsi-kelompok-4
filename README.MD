@@ -46,6 +46,8 @@ cd chat-terenkripsi-kelompok-4
 ```bash 
 Salin kode
 npm install
+```
+
 3. Setup Database
 Buka phpMyAdmin
 
@@ -121,5 +123,6 @@ kripto-web/
 │── index.js
 │── package.json
 │── README.md
+
 
 
