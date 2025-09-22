@@ -39,12 +39,14 @@ Tujuan: memahami penerapan kriptografi sederhana dalam **penyimpanan password te
 ## 📥 Instalasi & Setup
 
 ### 1. Clone Repository
+```bash
 git clone https://github.com/username/chat-terenkripsi-kelompok-4.git
 cd chat-terenkripsi-kelompok-4
+```
 
-### 2. Install Dependencies
-```bash 
+### 2. Install Dependencies 
 Salin kode
+```bash
 npm install
 ```
 
@@ -123,6 +125,7 @@ kripto-web/
 │── index.js
 │── package.json
 │── README.md
+
 
 
 
